@@ -1,0 +1,40 @@
+apiVersion: kubeadm.k8s.io/v1beta3
+bootstrapTokens:
+- groups:
+  - system:bootstrappers:kubeadm:default-node-token
+  token: ${token}
+  ttl: 24h0m0s
+  usages:
+  - signing
+  - authentication
+kind: InitConfiguration
+localAPIEndpoint:
+  advertiseAddress: ${master_ip}
+  bindPort: 6443
+nodeRegistration:
+  criSocket: unix:///var/run/containerd/containerd.sock
+  imagePullPolicy: IfNotPresent
+  name: ks-node-1
+  taints:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
+---
+apiServer:
+  certSANs:
+  - ${cert_sans}
+  timeoutForControlPlane: 4m0s
+apiVersion: kubeadm.k8s.io/v1beta3
+certificatesDir: /etc/kubernetes/pki
+clusterName: gilanetes
+controllerManager: {}
+dns: {}
+etcd:
+  local:
+    dataDir: /var/lib/etcd
+imageRepository: registry.k8s.io
+kind: ClusterConfiguration
+kubernetesVersion: v1.26.3
+networking:
+  dnsDomain: cluster.local
+  podSubnet: ${pod_cidr}
+scheduler: {}
