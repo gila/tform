@@ -73,4 +73,3 @@ resource "null_resource" "k8s" {
     ]
   }
 }
-

@@ -3,7 +3,6 @@ set -e
 
 # Initialize the Kubernetes cluster with the provided configuration file
 sudo kubeadm init --config /tmp/kubeadm_config.yaml
-
 # Configure kubectl to use the newly created cluster
 [ -d "$HOME"/.kube ] || mkdir -p "$HOME"/.kube
 sudo cp /etc/kubernetes/admin.conf "$HOME"/.kube/config

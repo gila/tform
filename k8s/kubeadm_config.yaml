@@ -33,7 +33,8 @@ etcd:
     dataDir: /var/lib/etcd
 imageRepository: registry.k8s.io
 kind: ClusterConfiguration
-kubernetesVersion: v1.26.3
+# if kubeadm is newer this brakes deployment should pin kubeadm
+#kubernetesVersion: v1.26.3
 networking:
   dnsDomain: cluster.local
   podSubnet: ${pod_cidr}
