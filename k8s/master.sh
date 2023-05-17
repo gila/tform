@@ -16,4 +16,5 @@ done
 
 # Apply the latest version of Flannel networking
 kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+#kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.25.1/manifests/tigera-operator.yaml
 

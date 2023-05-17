@@ -15,9 +15,9 @@ variable "host_name" {}
 
 variable "qcow2_image" {}
 
-variable osd_size {
-    description = "size in GB for the OSD drivers"
-    default = 5
+variable "osd_size" {
+  description = "size in GB for the OSD drivers"
+  default     = 5
 }
 
 provider "libvirt" {
@@ -50,7 +50,7 @@ resource "libvirt_volume" "data" {
   count  = var.num_nodes
   name   = format("${var.host_name}-data-%d", count.index + 1)
   pool   = libvirt_pool.tpool.name
-  size   = "${var.osd_size * 1024 * 1024 * 1024}"
+  size   = var.osd_size * 1024 * 1024 * 1024
   format = "qcow2"
 }
 
@@ -117,6 +117,17 @@ resource "libvirt_domain" "domain-ubuntu" {
 
 output "nodes" {
   value = libvirt_domain.domain-ubuntu.*.network_interface.0.addresses.0
+}
+
+output "ks-cluster-nodes" {
+  value = <<EOT
+[master]
+${libvirt_domain.domain-ubuntu.0.name} ansible_host=${libvirt_domain.domain-ubuntu.0.network_interface.0.addresses.0} ansible_user=${var.ssh_user} ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+
+[nodes]%{for ip in libvirt_domain.domain-ubuntu.*~}
+%{if ip.name != "${format("%d", 1)}"}${ip.name} ansible_host=${ip.network_interface.0.addresses.0} ansible_user=${var.ssh_user} ansible_ssh_common_args='-o StrictHostKeyChecking=no'%{endif}
+%{endfor~}
+EOT
 }
 
 output "result" {

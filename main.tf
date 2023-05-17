@@ -1,5 +1,3 @@
-
-
 module "k8s" {
   source = "./k8s"
   ssh_user     = var.ssh_user
@@ -17,4 +15,8 @@ module "provider" {
 
 output "data" {
   value = module.provider.result
+}
+
+output "ansible" {
+    value = module.provider.ks-cluster-nodes
 }
