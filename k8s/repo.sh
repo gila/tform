@@ -1,4 +1,5 @@
 #!/bin/bash
+
 set -x
 
 curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmour -o /etc/apt/trusted.gpg.d/docker.gpg --yes
@@ -37,6 +38,16 @@ sudo sysctl --system
 
 sudo mkdir -p /etc/containerd
 sudo containerd config default | sudo tee /etc/containerd/config.toml
+
+
+# add registry
+#
+cat << EOF | sudo tee -a /etc/containerd/config.toml
+[plugins."io.containerd.grpc.v1.cri".registry.mirrors."192.168.1.4:5000"]
+endpoint = ["http://192.168.1.4:5000"]
+[plugins."io.containerd.grpc.v1.cri".registry.configs."192.168.1.4:5000"]
+insecure = true
+EOF
 
 # ensure reboot does not take forever
 sudo mkdir -p /etc/systemd/system/containerd.service.d

@@ -65,8 +65,10 @@ resource "libvirt_cloudinit_disk" "commoninit" {
     }
   )
 
-  network_config = templatefile("${path.module}/network_config.cfg", {})
-  pool           = libvirt_pool.tpool.name
+  network_config = templatefile("${path.module}/network_config.cfg", {
+    "addresses" : cidrhost("192.168.1.0/24", 200 + count.index)
+  })
+  pool = libvirt_pool.tpool.name
 }
 
 
@@ -80,9 +82,10 @@ resource "libvirt_domain" "domain-ubuntu" {
   cloudinit = libvirt_cloudinit_disk.commoninit[count.index].id
 
   network_interface {
-    hostname       = format("${var.host_name}-%d", count.index + 1)
-    bridge         = "br0"
-    wait_for_lease = true
+    hostname  = format("${var.host_name}-%d", count.index + 1)
+    addresses = [cidrhost("192.168.1.0/24", 200 + count.index)]
+    bridge    = "br0"
+    #wait_for_lease = true
   }
 
   console {
@@ -113,7 +116,20 @@ resource "libvirt_domain" "domain-ubuntu" {
     listen_type = "address"
     autoport    = true
   }
+
+  provisioner "remote-exec" {
+    inline = ["cloud-init status --wait"]
+    on_failure = continue
+    connection {
+      type = "ssh"
+      user = var.ssh_user
+      private_key = file(format("/home/%s/.ssh/id_rsa", var.ssh_user))
+      host = cidrhost("192.168.1.0/24", 200 + count.index)
+    }
+  }
 }
+
+
 
 output "nodes" {
   value = libvirt_domain.domain-ubuntu.*.network_interface.0.addresses.0

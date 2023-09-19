@@ -24,6 +24,21 @@ resource "null_resource" "k8s" {
     private_key = file(format("/home/%s/.ssh/id_rsa", var.ssh_user))
   }
 
+  provisioner "local-exec" {
+    # Loop through the list of IP addresses and ping each one.
+    command = <<-EOT
+          for ip in "${join("\" \"", var.node_list)}"; do
+            until ping -c1 -W 1 "$ip"; do sleep 5; done
+          done
+        EOT
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "cloud-init status --wait"
+    ]
+  }
+
   provisioner "file" {
 
     content = templatefile("${path.module}/kubeadm_config.yaml", {

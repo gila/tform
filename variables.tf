@@ -7,7 +7,7 @@ variable "num_nodes" {
 variable "qcow2_image" {
   type        = string
   description = "Base install image. Ubuntu cloud images are assumed."
-  default     = "./kinetic-server-cloudimg-amd64.img"
+  default     = "./jammy-server-cloudimg-amd64.img"
 }
 
 variable "ssh_user" {

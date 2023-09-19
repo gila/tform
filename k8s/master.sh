@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -xe
 
 # Initialize the Kubernetes cluster with the provided configuration file
 sudo kubeadm init --config /tmp/kubeadm_config.yaml

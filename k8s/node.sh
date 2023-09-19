@@ -39,9 +39,9 @@ function wait_for_api_server() {
 
 if ! grep -qa container=lxc /proc/1/environ; then
     enable_ip_forwarding
-    set_huge_pages "${nr_hugepages}"
-    sudo apt-get -y install linux-modules-extra-$(uname -r)
-    add_kernel_modules nvme-tcp nvmet
+    #set_huge_pages "${nr_hugepages}"
+    #sudo apt-get -y install linux-modules-extra-$(uname -r)
+    #add_kernel_modules nvme-tcp nvmet
 fi
 
 wait_for_api_server "${master_ip}" "${token}"

@@ -39,3 +39,4 @@ networking:
   dnsDomain: cluster.local
   podSubnet: ${pod_cidr}
 scheduler: {}
+
